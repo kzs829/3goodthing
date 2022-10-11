@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
 class DailyPage extends StatelessWidget {
-  DailyPage(this.name);
-  final String name;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,9 +9,15 @@ class DailyPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Center(
-           child: Text(name),
-          )
+          TextField(
+            maxLength: 8,
+            decoration: InputDecoration(
+              labelText: 'Task',
+              hintText: '入力してください',
+              icon: Icon(Icons.done),
+            ),
+            autofocus: true,
+          ),
         ],
       ),
     );

@@ -68,44 +68,47 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
           title: Text(widget.title),
         ),
-        body: Column(
-          children: [
-            TableCalendar(
-              firstDay: DateTime.utc(2022, 4, 1),
-              lastDay: DateTime.utc(2025, 12, 31),
-              eventLoader: getEvent,
-              selectedDayPredicate: (day) {
-                return isSameDay(_selected, day);
-              },
-              onDaySelected: (selected, focused) {
-                if (!isSameDay(_selected, selected)) {
-                  setState(() {
-                    _selected = selected;
-                    _focusedDay = focused;
-                  });
-                }
-              },
-              focusedDay: _focusedDay,
-            ),
-            ListView(
-              shrinkWrap: true,
-              children: getEvent(_selected!)
-                  .map((event) => ListTile(
-                        title: Text(event.toString()),
-                      ))
-                  .toList(),
-            ),
-            TextButton(
-              child: Text('次へ'),
+        body: Column(children: [
+          TableCalendar(
+            firstDay: DateTime.utc(2022, 4, 1),
+            lastDay: DateTime.utc(2025, 12, 31),
+            eventLoader: getEvent,
+            selectedDayPredicate: (day) {
+              return isSameDay(_selected, day);
+            },
+            onDaySelected: (selected, focused) {
+              if (!isSameDay(_selected, selected)) {
+                setState(() {
+                  _selected = selected;
+                  _focusedDay = focused;
+                });
+              }
+            },
+            focusedDay: _focusedDay,
+          ),
+          ListView(
+            shrinkWrap: true,
+            children: getEvent(_selected!)
+                .map((event) => ListTile(
+                      title: Text(event.toString()),
+                    ))
+                .toList(),
+          ),
+          Container(
+            alignment: Alignment.bottomRight,
+            padding: const EdgeInsets.all(10),
+            child: FloatingActionButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => DailyPage('Text')),
+                  MaterialPageRoute(builder: (context) => DailyPage()),
                 );
               },
-            )
-          ]
-        )
+              child: const Icon(
+                Icons.add,
+              ),
+            )),
+        ])
     );
   }
 }
