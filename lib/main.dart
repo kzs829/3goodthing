@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'dart:collection';
-import 'package:sqflite/sqflite.dart';
 import 'daily_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -25,7 +28,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
   final String title;
 
   @override
@@ -34,6 +36,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Map<DateTime, List> _eventsList = {};
+  final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance.collection('goodthing').snapshots();
 
   DateTime _focusedDay = DateTime.now();
   DateTime? _selected;
@@ -93,6 +96,30 @@ class _MyHomePageState extends State<MyHomePage> {
                       title: Text(event.toString()),
                     ))
                 .toList(),
+          ),
+          StreamBuilder<QuerySnapshot>(
+            stream: _usersStream,
+            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return Text('Something went wrong');
+              }
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Text("Loading");
+              }
+
+              return ListView(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                children: snapshot.data!.docs.map((DocumentSnapshot document) {
+                  Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+                  return ListTile(
+                    title: Text(data['content']),
+                    subtitle: Text(data['date'].toDate().toString()),
+                  );
+                }).toList(),
+              );
+            },
           ),
           Container(
             alignment: Alignment.bottomRight,
