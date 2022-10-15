@@ -35,11 +35,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Map<DateTime, List> _eventsList = {};
-  final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance.collection('goodthing').snapshots();
-
   DateTime _focusedDay = DateTime.now();
-  DateTime? _selected;
+  DateTime _selected = DateTime.now();
+  Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance
+      .collection('goodthing')
+      .orderBy('date')
+      .startAt([Timestamp.fromDate(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day))])
+      .endAt([Timestamp.fromDate(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).add(Duration(days: 1)))])
+      .snapshots();
 
   int getHashCode(DateTime key) {
     return key.day * 1000000 + key.month * 10000 + key.year;
@@ -48,25 +51,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-
     _selected = _focusedDay;
-    _eventsList = {
-      DateTime.now().subtract(Duration(days: 2)): ['美容院', '買物'],
-      DateTime.now(): ['デート', '掃除する'],
-    };
   }
 
   @override
   Widget build(BuildContext context) {
-    final _events = LinkedHashMap<DateTime, List>(
-      equals: isSameDay,
-      hashCode: getHashCode,
-    )..addAll(_eventsList);
-
-    List getEvent(DateTime day) {
-      return _events[day] ?? [];
-    }
-
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -75,7 +64,6 @@ class _MyHomePageState extends State<MyHomePage> {
           TableCalendar(
             firstDay: DateTime.utc(2022, 4, 1),
             lastDay: DateTime.utc(2025, 12, 31),
-            eventLoader: getEvent,
             selectedDayPredicate: (day) {
               return isSameDay(_selected, day);
             },
@@ -84,18 +72,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 setState(() {
                   _selected = selected;
                   _focusedDay = focused;
+                  _usersStream = FirebaseFirestore.instance
+                      .collection('goodthing')
+                      .orderBy('date')
+                      .startAt([Timestamp.fromDate(_selected)])
+                      .endAt([Timestamp.fromDate(_selected.add(Duration(days: 1)))])
+                      .snapshots();
                 });
               }
             },
             focusedDay: _focusedDay,
-          ),
-          ListView(
-            shrinkWrap: true,
-            children: getEvent(_selected!)
-                .map((event) => ListTile(
-                      title: Text(event.toString()),
-                    ))
-                .toList(),
           ),
           StreamBuilder<QuerySnapshot>(
             stream: _usersStream,
