@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Container(
             alignment: Alignment.bottomRight,
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(30),
             child: FloatingActionButton(
               onPressed: () {
                 Navigator.push(
