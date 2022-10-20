@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'main.dart';
 
 class DailyPage extends StatelessWidget {
+  DailyPage(this.date);
+  DateTime date;
   String? taskName;
 
   @override
@@ -35,7 +37,7 @@ class DailyPage extends StatelessWidget {
                   .doc()
                   .set({
                 'content': taskName,
-                'date': DateTime.now()
+                'date': Timestamp.fromDate(date)
               });
               Navigator.push(
                 context,

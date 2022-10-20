@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       .collection('goodthing')
                       .orderBy('date')
                       .startAt([Timestamp.fromDate(_selected)])
-                      .endAt([Timestamp.fromDate(_selected.add(Duration(days: 1)))])
+                      .endAt([Timestamp.fromDate(_selected.add(Duration(days: 1,minutes: -1)))])
                       .snapshots();
                 });
               }
@@ -99,9 +99,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 physics: NeverScrollableScrollPhysics(),
                 children: snapshot.data!.docs.map((DocumentSnapshot document) {
                   Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
-                  return ListTile(
-                    title: Text(data['content']),
-                    subtitle: Text(data['date'].toDate().toString()),
+                  return Dismissible(
+                    key: Key(data['id']),
+                    background: Container(
+                      color: Colors.red,
+                    ),
+                    child: ListTile(
+                      title: Text(data['content']),
+                    ),
                   );
                 }).toList(),
               );
@@ -114,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => DailyPage()),
+                  MaterialPageRoute(builder: (context) => DailyPage(_selected)),
                 );
               },
               child: const Icon(
