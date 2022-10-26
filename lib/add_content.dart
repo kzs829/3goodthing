@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../main.dart';
+import 'content_list.dart';
 
 class AddContent extends StatelessWidget {
   AddContent(this.date, {super.key});
@@ -31,16 +31,19 @@ class AddContent extends StatelessWidget {
           padding: const EdgeInsets.all(30),
           child: FloatingActionButton(
             onPressed: () {
-              FirebaseFirestore.instance
+              final goodthing = FirebaseFirestore.instance
                   .collection('goodthing')
-                  .doc()
-                  .set({
+                  .doc();
+
+              goodthing.set({
                 'content': content,
-                'date': Timestamp.fromDate(date)
+                'date': Timestamp.fromDate(date),
+                'id': goodthing.id
               });
+
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const MyApp()),
+                MaterialPageRoute(builder: (context) => const ContentList(title: 'Flutter Demo',)),
               );
             },
             child: const Icon(

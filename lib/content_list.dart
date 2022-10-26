@@ -60,6 +60,28 @@ class _ContentListState extends State<ContentList> {
               }
             },
             focusedDay: _focusedDay,
+            calendarStyle: CalendarStyle(
+              isTodayHighlighted: true,
+              defaultDecoration: const BoxDecoration(
+                shape: BoxShape.rectangle,
+              ),
+              weekendDecoration: const BoxDecoration(
+                shape: BoxShape.rectangle,
+              ),
+              selectedDecoration: BoxDecoration(
+                color: Colors.pinkAccent,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              todayDecoration: BoxDecoration(
+                color: Colors.pinkAccent,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+            ),
+            headerStyle: const HeaderStyle(
+              formatButtonVisible: false,
+            ),
           ),
           StreamBuilder<QuerySnapshot>(
             stream: _usersStream,
@@ -78,6 +100,7 @@ class _ContentListState extends State<ContentList> {
                 children: snapshot.data!.docs.map((DocumentSnapshot document) {
                   Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
                   return Dismissible(
+                    direction: DismissDirection.endToStart,
                     key: Key(data['id']),
                     background: Container(
                       color: Colors.red,
@@ -135,8 +158,6 @@ class _ContentListState extends State<ContentList> {
                                     style: TextStyle(color: Colors.red),
                                   ),
                                   onPressed: () {
-                                    setState(() {
-                                    });
                                     Navigator.of(context).pop(true);
                                   },
                                 ),
